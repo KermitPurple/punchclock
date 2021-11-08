@@ -61,6 +61,7 @@ def clock_in(name: str):
     elif last_entry_len == 2:
         clock.append([datetime.now()])
         set_punchclock(name, clock)
+        print('Clocked in!')
     else:
         raise ValueError(f'last_entry_len shouldn\'t be {last_entry_len} :\\')
 
@@ -79,14 +80,51 @@ def clock_out(name: str):
     if last_entry_len == 1:
         clock[-1].append(datetime.now())
         set_punchclock(name, clock)
+        print('Clocked out!')
     elif last_entry_len == 2:
         print('You need to clock in before you clock back out')
+    else:
+        raise ValueError(f'last_entry_len shouldn\'t be {last_entry_len} :\\')
+
+def show_current(name: str):
+    clocks = get_all_punchclocks()
+    while not clock_exists(name):
+        print(f'{name} does not exist.')
+        print(f'The existing clocks are: {clocks}')
+        name = input('Enter name of another clock> ')
+    clock = get_punchclock(name)
+    last_entry_len = len(clock[-1])
+    if last_entry_len == 1:
+        start, = clock[-1]
+        end = datetime.now()
+        elapsed = (end - start)
+        print(f'started: {start.isoformat()}')
+        print(f'now: {end.isoformat()}')
+        print(f'elapsed time: {elapsed}')
+    elif last_entry_len == 2:
+        start, end = clock[-1]
+        elapsed = (end - start)
+        print(f'started: {start.isoformat()}')
+        print(f'ended: {end.isoformat()}')
+        print(f'elapsed time: {elapsed}')
     else:
         raise ValueError(f'last_entry_len shouldn\'t be {last_entry_len} :\\')
 
 def main():
     '''Driver Code'''
     os.chdir(PUNCHCLOCK_PATH)
+    sys.argv.pop(0)
+    arg_len = len(sys.argv)
+    if arg_len == 2:
+        action, name = sys.argv
+        if action == 'in' or action == 'i':
+            clock_in(name)
+        elif action == 'out' or action == 'o':
+            clock_out(name)
+        elif action == 'show' or action == 's':
+            show_current(name)
+    else:
+        raise ValueError(f'Incorrect number of args: {arg_len}')
 
 if __name__ == '__main__':
     main() # run driver code
