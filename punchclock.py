@@ -25,6 +25,13 @@ def clock_exists(name: str) -> bool:
     '''
     return f'{PUNCHCLOCK_PREFIX}{name}' in os.listdir()
 
+def delete_punchclock(name: str):
+    '''
+    delete a punch clock
+    :name: name of clock to delete
+    '''
+    os.remove(f'{PUNCHCLOCK_PREFIX}{name}')
+
 def get_punchclock(name: str) -> List[List[datetime]]:
     '''
     get the punchclock data from a file
@@ -123,6 +130,12 @@ def main():
             clock_out(name)
         elif action == 'show' or action == 's':
             show_current(name)
+        elif action == 'delete' or action == 'd':
+            delete_punchclock(name)
+    elif arg_len == 1:
+        action = sys.argv[0]
+        if action == 'show' or action == 's' or action == 'list' or action == 'l':
+            print(get_all_punchclocks())
     else:
         raise ValueError(f'Incorrect number of args: {arg_len}')
 
