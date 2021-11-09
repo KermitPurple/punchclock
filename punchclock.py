@@ -88,6 +88,7 @@ def clock_out(name: str):
         clock[-1].append(datetime.now())
         set_punchclock(name, clock)
         print('Clocked out!')
+        print(f'elapsed time: {clock[-1][1] - clock[-1][0]}')
     elif last_entry_len == 2:
         print('You need to clock in before you clock back out')
     else:
