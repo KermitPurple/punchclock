@@ -126,7 +126,7 @@ def get_running() -> List[str]:
     '''
     get a list of all running punchclocks
     '''
-    return list(filter(lambda name: len(get_punchclock(name)[-1]) != 1, get_all_punchclocks()))
+    return list(filter(lambda name: len(get_punchclock(name)[-1]) == 1, get_all_punchclocks()))
 
 
 def print_help():
