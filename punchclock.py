@@ -95,6 +95,10 @@ def clock_out(name: str):
         raise ValueError(f'last_entry_len shouldn\'t be {last_entry_len} :\\')
 
 def show_current(name: str):
+    '''
+    show the most recent entry for the given clock
+    :name: name of clock to check
+    '''
     clocks = get_all_punchclocks()
     while not clock_exists(name):
         print(f'{name} does not exist.')
@@ -118,6 +122,29 @@ def show_current(name: str):
     else:
         raise ValueError(f'last_entry_len shouldn\'t be {last_entry_len} :\\')
 
+def get_running() -> List[str]:
+    '''
+    get a list of all running punchclocks
+    '''
+    return list(filter(lambda name: len(get_punchclock(name)[-1]) != 1, get_all_punchclocks()))
+
+
+def print_help():
+    print('''clock
+    i {name}
+    in {name} - clock into a clock with name {name}
+    o {name}
+    out {name} - clock out of a clock with name {name}
+    s {name}
+    show {name} - show most recent entry of clock with name {name}
+    s
+    show
+    l
+    list - show all existing clocks
+    r
+    running - show all clocks currently clocked into
+    ''')
+
 def main():
     '''Driver Code'''
     os.chdir(PUNCHCLOCK_PATH)
@@ -137,6 +164,12 @@ def main():
         action = sys.argv[0]
         if action == 'show' or action == 's' or action == 'list' or action == 'l':
             print(get_all_punchclocks())
+        elif action == 'running' or action == 'r':
+            print(get_running())
+        elif action == 'help' or action == 'h':
+            print_help()
+    elif arg_len == 0:
+        print_help()
     else:
         raise ValueError(f'Incorrect number of args: {arg_len}')
 
