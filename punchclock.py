@@ -150,28 +150,21 @@ def main():
     os.chdir(PUNCHCLOCK_PATH)
     sys.argv.pop(0)
     arg_len = len(sys.argv)
-    if arg_len == 2:
-        action, name = sys.argv
-        if action == 'in' or action == 'i':
-            clock_in(name)
-        elif action == 'out' or action == 'o':
-            clock_out(name)
-        elif action == 'show' or action == 's':
-            show_current(name)
-        elif action == 'delete' or action == 'd':
-            delete_punchclock(name)
-    elif arg_len == 1:
-        action = sys.argv[0]
-        if action == 'show' or action == 's' or action == 'list' or action == 'l':
-            print(get_all_punchclocks())
-        elif action == 'running' or action == 'r':
-            print(get_running())
-        elif action == 'help' or action == 'h':
+    match sys.argv:
+        case [] | ['help'] | ['h']:
             print_help()
-    elif arg_len == 0:
-        print_help()
-    else:
-        raise ValueError(f'Incorrect number of args: {arg_len}')
+        case ['in', name] | ['i', name]:
+            clock_in(name)
+        case ['out', name] | ['o', name]:
+            clock_out(name)
+        case ['show', name] | ['s', name]:
+            show_current(name)
+        case ['delete', name] | ['d', name]:
+            delete_punchclock(name)
+        case ['show'] | ['s'] | ['list'] | ['l']:
+            print(get_all_punchclocks())
+        case ['running'] | ['r']:
+            print(get_running())
 
 if __name__ == '__main__':
     main() # run driver code
