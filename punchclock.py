@@ -175,7 +175,8 @@ def plot_punchclock(
                 (e_val + s_val) / 2,
                 start.strftime(time_format) + ' - ' + end.strftime(time_format),
                 ha='center',
-                va='center'
+                va='center',
+                fontsize=7.5
             )
         if index > max_days:
             break
