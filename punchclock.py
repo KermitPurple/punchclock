@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from command_line_tools import *
 from datetime import datetime
-from typing import List
 import pickle
 import sys
 import os
@@ -10,7 +9,7 @@ PUNCHCLOCK_PATH = '/Users/shane/dropbox/punchclocks'
 PUNCHCLOCK_PREFIX = 'pc_'
 PUNCHCLOCK_PREFIX_LENGTH = len(PUNCHCLOCK_PREFIX)
 
-def get_all_punchclocks() -> List[str]:
+def get_all_punchclocks() -> list[str]:
     '''
     get a list of existing punch clock names
     :returns: list of punchclock names
@@ -32,7 +31,7 @@ def delete_punchclock(name: str):
     '''
     os.remove(f'{PUNCHCLOCK_PREFIX}{name}')
 
-def get_punchclock(name: str) -> List[List[datetime]]:
+def get_punchclock(name: str) -> list[list[datetime]]:
     '''
     get the punchclock data from a file
     :name: name of clock to get
@@ -40,7 +39,7 @@ def get_punchclock(name: str) -> List[List[datetime]]:
     '''
     return pickle.load(open(f'{PUNCHCLOCK_PREFIX}{name}', 'rb'))
 
-def set_punchclock(name: str, clock: List[List[datetime]]):
+def set_punchclock(name: str, clock: list[list[datetime]]):
     '''
     :name: name of punchclock to set
     :clock: the data to set the clock to
@@ -122,7 +121,7 @@ def show_current(name: str):
     else:
         raise ValueError(f'last_entry_len shouldn\'t be {last_entry_len} :\\')
 
-def get_running() -> List[str]:
+def get_running() -> list[str]:
     '''
     get a list of all running punchclocks
     '''
