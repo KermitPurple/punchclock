@@ -2,6 +2,8 @@
 Tools to make the commandline look nice easier
 '''
 
+from sys import stderr
+
 def get_yes_no(prompt: str) -> bool:
     '''
     ask a yes or no question and prompt response
@@ -15,3 +17,9 @@ def get_yes_no(prompt: str) -> bool:
             return True
         elif response == 'no' or response == 'n':
             return False
+
+def eprint(*args, **kwargs):
+    '''
+    Print to stderr
+    '''
+    print(*args, file=stderr, **kwargs)
