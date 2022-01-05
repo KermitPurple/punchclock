@@ -155,13 +155,13 @@ def plot_punchclock(
         list(map(
             lambda x: x * width + width / 2,
             range(min(len(dct), max_days))
-        )),
+        ))[::-1],
         list(map(
             lambda x: x.strftime(date_format),
-            dct.keys()
+            sorted(dct.keys(), reverse=True)
         ))
     )
-    for current_date, times in dct.items():
+    for current_date, times in sorted(dct.items(), key=lambda x: x[0]):
         for start, end in times:
             s_val = start.hour + start.minute / 60
             e_val = end.hour + end.minute / 60
@@ -203,18 +203,23 @@ def get_date_dict(name: str):
             else:
                 dct[key].append(val)
         else:
-            key = start.date()
+            s_date = start.date()
+            e_date = end.date()
             val = [start.time(), time(23, 59, 59, 999_999)]
-            if key not in dct:
-                dct[key] = [val]
+            if s_date not in dct:
+                dct[s_date] = [val]
             else:
-                dct[key].append(val)
-            key = end.date()
+                dct[s_date].append(val)
+            full_day = [time(0, 0, 0), time(23, 59, 59, 999_999)]
+            diff = (end - start).days
+            for i in range(diff):
+                td = timedelta(i + 1)
+                dct[s_date + td] = [full_day[:]]
             val = [time(0, 0, 0), end.time()]
-            if key not in dct:
-                dct[key] = [val]
+            if e_date not in dct:
+                dct[e_date] = [val]
             else:
-                dct[key].append(val)
+                dct[e_date].append(val)
     return dct
 
 def calculate_total(name: str, since: date) -> timedelta:
