@@ -138,7 +138,9 @@ def plot_punchclock(name: str, max_days: int = 7, time_format: str = '%I:%M %p')
     index = 0
     x = 0
     width = 20
-    for date, times in get_date_dict(name).items():
+    dct = get_date_dict(name)
+    plt.xticks(list(map(lambda x: x * width + width / 2, range(len(dct)))), dct.keys())
+    for date, times in dct.items():
         for start, end in times:
             s_val = start.hour + start.minute / 60
             e_val = end.hour + end.minute / 60
