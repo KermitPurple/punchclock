@@ -1,3 +1,7 @@
+'''
+Tools to make the commandline look nice easier
+'''
+
 def get_yes_no(prompt: str) -> bool:
     '''
     ask a yes or no question and prompt response
