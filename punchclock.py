@@ -128,12 +128,19 @@ def get_running() -> list[str]:
     '''
     return list(filter(lambda name: len(get_punchclock(name)[-1]) == 1, get_all_punchclocks()))
 
-def plot_punchclock(name: str, max_days: int = 7, time_format: str = '%I:%M %p'):
+def plot_punchclock(
+        name: str,
+        max_days: int = 7,
+        time_format: str = '%I:%M %p',
+        date_format: str = '%a %Y/%m/%d'
+
+    ):
     '''
     plot a punchclock
     :name: name of the clock to plot
     :max_days: the maximum number of days to display
     :time_format: a time format string for time.strftime
+    :date_format: a date format string for datetime.strftime
     '''
     plt.ylim(0, 24) # set limits on y axis
     plt.gca().invert_yaxis() # flippy floppy
@@ -150,7 +157,7 @@ def plot_punchclock(name: str, max_days: int = 7, time_format: str = '%I:%M %p')
             range(min(len(dct), max_days))
         )),
         list(map(
-            lambda x: x.strftime('%a %Y/%m/%d'),
+            lambda x: x.strftime(date_format),
             dct.keys()
         ))
     )
