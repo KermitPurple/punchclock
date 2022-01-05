@@ -133,6 +133,8 @@ def plot_punchclock(name: str):
     plot a punchclock
     :name: name of the clock to plot
     '''
+    plt.ylim(0, 24) # set limits on y axis
+    plt.gca().invert_yaxis() # flippy floppy
     width_x = 20
     min_x = 0
     max_x = width_x
@@ -146,14 +148,14 @@ def plot_punchclock(name: str):
                 [max_x, max_x]
             )
             plt.text(
-                50,
+                (max_x + min_x) / 2,
                 (e_val + s_val) / 2,
                 start.strftime('%H:%M') + ' - ' + end.strftime('%H:%M'),
                 ha='center',
                 va='center'
             )
         min_x += width_x
-        min_x += width_x
+        max_x += width_x
     plt.show()
 
 def get_date_dict(name: str):
