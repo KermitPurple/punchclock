@@ -151,15 +151,16 @@ def plot_punchclock(
     x = 0
     width = 20
     dct = get_date_dict(name)
+    size = min(len(dct), max_days)
     plt.xticks(
         list(map(
             lambda x: x * width + width / 2,
-            range(min(len(dct), max_days))
+            range(size)
         ))[::-1],
-        list(map(
+        reversed(list(map(
             lambda x: x.strftime(date_format),
-            sorted(dct.keys(), reverse=True)
-        ))
+            sorted(dct.keys())
+        ))[:size])
     )
     for current_date, times in sorted(dct.items(), key=lambda x: x[0]):
         for start, end in times:
