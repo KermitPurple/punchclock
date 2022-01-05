@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from command_line_tools import get_yes_no
+from command_line_tools import *
 from datetime import datetime
 from typing import List
 import pickle
