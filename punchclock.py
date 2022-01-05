@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from command_line_tools import *
-from datetime import datetime
+import matplotlib.pyplot as plt
+from datetime import datetime, time
 import pickle
 import sys
 import os
@@ -127,12 +128,74 @@ def get_running() -> list[str]:
     '''
     return list(filter(lambda name: len(get_punchclock(name)[-1]) == 1, get_all_punchclocks()))
 
+def plot_punchclock(name: str):
+    '''
+    plot a punchclock
+    :name: name of the clock to plot
+    '''
+    width_x = 20
+    min_x = 0
+    max_x = width_x
+    for date, times in get_date_dict(name).items():
+        for start, end in times:
+            s_val = start.hour + start.minute / 60
+            e_val = end.hour + end.minute / 60
+            plt.fill_betweenx(
+                [s_val, e_val],
+                [min_x, min_x],
+                [max_x, max_x]
+            )
+            plt.text(
+                50,
+                (e_val + s_val) / 2,
+                start.strftime('%H:%M') + ' - ' + end.strftime('%H:%M'),
+                ha='center',
+                va='center'
+            )
+        min_x += width_x
+        min_x += width_x
+    plt.show()
+
+def get_date_dict(name: str):
+    '''
+    :name: name of the clock to get
+    '''
+    dct = {}
+    clock = get_punchclock(name)
+    for entry in reversed(clock):
+        if len(entry) == 1:
+            start, end = entry[0], datetime.now()
+        elif len(entry) == 2:
+            start, end = entry
+        if start.date() == end.date():
+            date = start.date()
+            val = [start.time(), end.time()]
+            if date not in dct:
+                dct[date] = [val]
+            else:
+                dct[date].append(val)
+        else:
+            date = start.date()
+            val = [start.time(), time(23, 59, 59)]
+            if date not in dct:
+                dct[date] = [val]
+            else:
+                dct[date].append(val)
+            date = end.date()
+            val = [time(0, 0, 0), end.time()]
+            if date not in dct:
+                dct[date] = [val]
+            else:
+                dct[date].append(val)
+    return dct
+
 def print_help():
     print('''clock
   i {name}, in {name}     - clock into a clock with name {name}
   o {name}, out {name}    - clock out of a clock with name {name}
   s {name}, show {name}   - show most recent entry of clock with name {name}
   d {name}, delete {name} - delete a clock with the name {name}
+  p {name}, plot {name}   - plot a clock with the name {name}
   s, show, l, list        - show all existing clocks
   r, running              - show all clocks currently clocked into
     ''')
@@ -153,6 +216,8 @@ def main():
             show_current(name)
         case ['delete', name] | ['d', name]:
             delete_punchclock(name)
+        case ['plot', name] | ['p', name]:
+            plot_punchclock(name)
         case ['show'] | ['s'] | ['list'] | ['l']:
             print(get_all_punchclocks())
         case ['running'] | ['r']:
