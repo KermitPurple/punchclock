@@ -129,18 +129,12 @@ def get_running() -> list[str]:
 
 def print_help():
     print('''clock
-    i {name}
-    in {name} - clock into a clock with name {name}
-    o {name}
-    out {name} - clock out of a clock with name {name}
-    s {name}
-    show {name} - show most recent entry of clock with name {name}
-    s
-    show
-    l
-    list - show all existing clocks
-    r
-    running - show all clocks currently clocked into
+  i {name}, in {name}     - clock into a clock with name {name}
+  o {name}, out {name}    - clock out of a clock with name {name}
+  s {name}, show {name}   - show most recent entry of clock with name {name}
+  d {name}, delete {name} - delete a clock with the name {name}
+  s, show, l, list        - show all existing clocks
+  r, running              - show all clocks currently clocked into
     ''')
 
 def main():
