@@ -5,6 +5,15 @@ Tools to make the commandline look nice easier
 from sys import stderr
 from datetime import date
 
+def parse_date(date_string: str) -> date:
+    return date.fromisoformat(
+        date_string
+            .strip()
+            .replace(' ', '-')
+            .replace('/', '-')
+            .replace('\\', '-')
+    )
+
 def get_date(prompt: str = '', print_format: bool = True, print_newline: bool = True) -> date:
     '''
     gets and validates user input for a date in isoformat
@@ -14,13 +23,7 @@ def get_date(prompt: str = '', print_format: bool = True, print_newline: bool = 
         print(prompt + ('(YYYY-MM-DD)' if print_format else ''), end = '\n' if print_newline else '')
     while 1:
         try:
-            return date.fromisoformat(
-                input()
-                    .strip()
-                    .replace(' ', '-')
-                    .replace('/', '-')
-                    .replace('\\', '-')
-            )
+            parse_date(input())
         except ValueError as e:
             eprint(e)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from command_line_tools import *
 import matplotlib.pyplot as plt
-from datetime import datetime, time
+from datetime import datetime, date, time, timedelta
 import pickle
 import sys
 import os
@@ -161,7 +161,7 @@ def plot_punchclock(
             dct.keys()
         ))
     )
-    for date, times in dct.items():
+    for current_date, times in dct.items():
         for start, end in times:
             s_val = start.hour + start.minute / 60
             e_val = end.hour + end.minute / 60
@@ -195,36 +195,57 @@ def get_date_dict(name: str):
         elif len(entry) == 2:
             start, end = entry
         if start.date() == end.date():
-            date = start.date()
+            key = start.date()
             val = [start.time(), end.time()]
-            if date not in dct:
-                dct[date] = [val]
+            if key not in dct:
+                dct[key] = [val]
             else:
-                dct[date].append(val)
+                dct[key].append(val)
         else:
-            date = start.date()
-            val = [start.time(), time(23, 59, 59)]
-            if date not in dct:
-                dct[date] = [val]
+            key = start.date()
+            val = [start.time(), time(23, 59, 59, 999_999)]
+            if key not in dct:
+                dct[key] = [val]
             else:
-                dct[date].append(val)
-            date = end.date()
+                dct[key].append(val)
+            key = end.date()
             val = [time(0, 0, 0), end.time()]
-            if date not in dct:
-                dct[date] = [val]
+            if key not in dct:
+                dct[key] = [val]
             else:
-                dct[date].append(val)
+                dct[key].append(val)
     return dct
+
+def calculate_total(name: str, since: date) -> timedelta:
+    '''
+    :name: name of the punch clock
+    :since: the earliest date to count
+    :returns: total ammount of time put into a punchclock
+    '''
+    total = timedelta()
+    dct = get_date_dict(name)
+    for key, times in reversed(dct.items()):
+        if key < since:
+            return total
+        for val in times:
+            if len(val) == 1:
+                start, end = val[0], datetime.now()
+            elif len(val) == 2:
+                start, end = val
+            total += datetime.combine(key, end) - datetime.combine(key, start)
+            print(total)
+    return total
 
 def print_help():
     print('''clock
-  i {name}, in {name}     - clock into a clock with name {name}
-  o {name}, out {name}    - clock out of a clock with name {name}
-  s {name}, show {name}   - show most recent entry of clock with name {name}
-  d {name}, delete {name} - delete a clock with the name {name}
-  p {name}, plot {name}   - plot a clock with the name {name}
-  s, show, l, list        - show all existing clocks
-  r, running              - show all clocks currently clocked into
+  i {name}, in {name}                     - clock into a clock with name {name}
+  o {name}, out {name}                    - clock out of a clock with name {name}
+  s {name}, show {name}                   - show most recent entry of clock with name {name}
+  d {name}, delete {name}                 - delete a clock with the name {name}
+  p {name}, plot {name}                   - plot a clock with the name {name}
+  t {name} {date}, total {name} {date}    - calculated total time clocked in {name} since {date}
+  s, show, l, list                        - show all existing clocks
+  r, running                              - show all clocks currently clocked into
     ''')
 
 def main():
@@ -245,6 +266,12 @@ def main():
             delete_punchclock(name)
         case ['plot', name] | ['p', name]:
             plot_punchclock(name)
+        case ['total', name, since] | ['t', name, since]:
+            try:
+                date_obj = parse_date(since)
+                print(f'Total time elapsed in {name} since {since}: {calculate_total(name, date_obj)}')
+            except ValueError as e:
+                print(e)
         case ['show'] | ['s'] | ['list'] | ['l']:
             print(get_all_punchclocks())
         case ['running'] | ['r']:
