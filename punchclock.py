@@ -128,34 +128,36 @@ def get_running() -> list[str]:
     '''
     return list(filter(lambda name: len(get_punchclock(name)[-1]) == 1, get_all_punchclocks()))
 
-def plot_punchclock(name: str):
+def plot_punchclock(name: str, max_days: int = 7, time_format: str = '%I:%M %p'):
     '''
     plot a punchclock
     :name: name of the clock to plot
     '''
     plt.ylim(0, 24) # set limits on y axis
     plt.gca().invert_yaxis() # flippy floppy
-    width_x = 20
-    min_x = 0
-    max_x = width_x
+    index = 0
+    x = 0
+    width = 20
     for date, times in get_date_dict(name).items():
         for start, end in times:
             s_val = start.hour + start.minute / 60
             e_val = end.hour + end.minute / 60
             plt.fill_betweenx(
                 [s_val, e_val],
-                [min_x, min_x],
-                [max_x, max_x]
+                [x, x],
+                [x + width, x + width]
             )
             plt.text(
-                (max_x + min_x) / 2,
+                x + width / 2,
                 (e_val + s_val) / 2,
-                start.strftime('%H:%M') + ' - ' + end.strftime('%H:%M'),
+                start.strftime(time_format) + ' - ' + end.strftime(time_format),
                 ha='center',
                 va='center'
             )
-        min_x += width_x
-        max_x += width_x
+        if index > max_days:
+            break
+        x += width
+        index += 1
     plt.show()
 
 def get_date_dict(name: str):
