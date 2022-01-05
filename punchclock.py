@@ -135,11 +135,14 @@ def plot_punchclock(name: str, max_days: int = 7, time_format: str = '%I:%M %p')
     '''
     plt.ylim(0, 24) # set limits on y axis
     plt.gca().invert_yaxis() # flippy floppy
+    plt.xlabel('Date')
+    plt.ylabel('Time')
+    plt.title(f'{name.title()} Punchclock')
     index = 0
     x = 0
     width = 20
     dct = get_date_dict(name)
-    plt.xticks(list(map(lambda x: x * width + width / 2, range(len(dct)))), dct.keys())
+    plt.xticks(list(map(lambda x: x * width + width / 2, range(min(len(dct), max_days)))), dct.keys())
     for date, times in dct.items():
         for start, end in times:
             s_val = start.hour + start.minute / 60
