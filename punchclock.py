@@ -233,7 +233,6 @@ def calculate_total(name: str, since: date) -> timedelta:
             elif len(val) == 2:
                 start, end = val
             total += datetime.combine(key, end) - datetime.combine(key, start)
-            print(total)
     return total
 
 def print_help():
