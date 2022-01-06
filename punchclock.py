@@ -180,10 +180,10 @@ def plot_punchclock(
                 va='center',
                 fontsize=7.5
             )
-        if index > max_days:
-            break
         x += width
         index += 1
+        if index >= max_days:
+            break
     plt.show()
 
 def get_date_dict(name: str):
