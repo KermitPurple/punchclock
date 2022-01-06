@@ -10,6 +10,16 @@ PUNCHCLOCK_PATH = '/Users/shane/dropbox/punchclocks'
 PUNCHCLOCK_PREFIX = 'pc_'
 PUNCHCLOCK_PREFIX_LENGTH = len(PUNCHCLOCK_PREFIX)
 
+def exists_or_exit(name: str):
+    '''
+    if clock_exists returns true it does nothing
+    otherwise it prints error message and exists
+    :name: name of punchclock to check
+    '''
+    if not clock_exists(name):
+        eprint(f'No clock with name "{name}" exists')
+        exit(1)
+
 def get_all_punchclocks() -> list[str]:
     '''
     get a list of existing punch clock names
@@ -30,9 +40,7 @@ def delete_punchclock(name: str):
     delete a punch clock
     :name: name of clock to delete
     '''
-    if not clock_exists(name):
-        eprint(f'No clock with name "{name}" exists')
-        exit(1)
+    exists_or_exit(name)
     os.remove(f'{PUNCHCLOCK_PREFIX}{name}')
 
 def get_punchclock(name: str) -> list[list[datetime]]:
@@ -41,9 +49,7 @@ def get_punchclock(name: str) -> list[list[datetime]]:
     :name: name of clock to get
     :returns: punchclock data
     '''
-    if not clock_exists(name):
-        eprint(f'No clock with name "{name}" exists')
-        exit(1)
+    exists_or_exit(name)
     return pickle.load(open(f'{PUNCHCLOCK_PREFIX}{name}', 'rb'))
 
 def set_punchclock(name: str, clock: list[list[datetime]]):
@@ -58,15 +64,11 @@ def clock_in(name: str):
     clock into a punch in clock setting the intial time
     :name: name of clock to clock in to
     '''
-    clocks = get_all_punchclocks()
-    while not clock_exists(name):
+    if not clock_exists(name):
         print(f'{name} does not exist.')
         if get_yes_no('Do you want to create a new clock with that name?(y/n)'):
             set_punchclock(name, [[datetime.now()]])
-            return
-        else:
-            print(f'The existing clocks are: {clocks}')
-            name = input('Enter name of another clock> ')
+        return
     clock = get_punchclock(name)
     last_entry_len = len(clock[-1])
     if last_entry_len == 1:
@@ -83,11 +85,7 @@ def clock_out(name: str):
     clock out of a punch out clock setting the ending time
     :name: name of clock to clock out of
     '''
-    clocks = get_all_punchclocks()
-    while not clock_exists(name):
-        print(f'{name} does not exist.')
-        print(f'The existing clocks are: {clocks}')
-        name = input('Enter name of another clock> ')
+    exists_or_exit(name)
     clock = get_punchclock(name)
     last_entry_len = len(clock[-1])
     if last_entry_len == 1:
@@ -105,11 +103,7 @@ def show_current(name: str):
     show the most recent entry for the given clock
     :name: name of clock to check
     '''
-    clocks = get_all_punchclocks()
-    while not clock_exists(name):
-        print(f'{name} does not exist.')
-        print(f'The existing clocks are: {clocks}')
-        name = input('Enter name of another clock> ')
+    exists_or_exit(name)
     clock = get_punchclock(name)
     last_entry_len = len(clock[-1])
     if last_entry_len == 1:
@@ -148,9 +142,7 @@ def plot_punchclock(
     :time_format: a time format string for time.strftime
     :date_format: a date format string for datetime.strftime
     '''
-    if not clock_exists(name):
-        eprint(f'No clock with name "{name}" exists')
-        exit(1)
+    exists_or_exit(name)
     plt.ylim(0, 24) # set limits on y axis
     plt.gca().invert_yaxis() # flippy floppy
     plt.xlabel('Date')
