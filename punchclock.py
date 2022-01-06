@@ -161,7 +161,7 @@ def plot_punchclock(
         reversed(list(map(
             lambda x: x.strftime(date_format),
             sorted(dct.keys())
-        ))[:size])
+        ))[-size:])
     )
     for current_date, times in sorted(dct.items(), key=lambda x: x[0]):
         for start, end in times:
@@ -213,7 +213,7 @@ def get_date_dict(name: str):
             else:
                 dct[s_date].append(val)
             full_day = [time(0, 0, 0), time(23, 59, 59, 999_999)]
-            diff = (end - start).days - 1
+            diff = (end - start).days
             for i in range(diff):
                 td = timedelta(days=i + 1)
                 dct[s_date + td] = [full_day[:]]
