@@ -152,6 +152,7 @@ def plot_punchclock(
     width = 20
     dct = get_date_dict(name)
     size = min(len(dct), max_days)
+    plt.xlim(0, size * width)
     plt.xticks(
         list(map(
             lambda x: x * width + width / 2,
