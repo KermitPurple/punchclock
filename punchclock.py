@@ -253,8 +253,7 @@ def print_help():
   p {name}, plot {name}                   - plot a clock with the name {name}
   t {name} {date}, total {name} {date}    - calculated total time clocked in {name} since {date}
   s, show, l, list                        - show all existing clocks
-  r, running                              - show all clocks currently clocked into
-    ''')
+  r, running                              - show all clocks currently clocked into''')
 
 def main():
     '''Driver Code'''
