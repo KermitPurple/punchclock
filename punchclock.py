@@ -30,6 +30,9 @@ def delete_punchclock(name: str):
     delete a punch clock
     :name: name of clock to delete
     '''
+    if not clock_exists(name):
+        eprint(f'No clock with name "{name}" exists')
+        exit(1)
     os.remove(f'{PUNCHCLOCK_PREFIX}{name}')
 
 def get_punchclock(name: str) -> list[list[datetime]]:
@@ -38,6 +41,9 @@ def get_punchclock(name: str) -> list[list[datetime]]:
     :name: name of clock to get
     :returns: punchclock data
     '''
+    if not clock_exists(name):
+        eprint(f'No clock with name "{name}" exists')
+        exit(1)
     return pickle.load(open(f'{PUNCHCLOCK_PREFIX}{name}', 'rb'))
 
 def set_punchclock(name: str, clock: list[list[datetime]]):
@@ -142,6 +148,9 @@ def plot_punchclock(
     :time_format: a time format string for time.strftime
     :date_format: a date format string for datetime.strftime
     '''
+    if not clock_exists(name):
+        eprint(f'No clock with name "{name}" exists')
+        exit(1)
     plt.ylim(0, 24) # set limits on y axis
     plt.gca().invert_yaxis() # flippy floppy
     plt.xlabel('Date')
