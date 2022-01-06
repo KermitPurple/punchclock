@@ -214,7 +214,6 @@ def get_date_dict(name: str):
                 dct[s_date].append(val)
             full_day = [time(0, 0, 0), time(23, 59, 59, 999_999)]
             diff = (end - start).days - 1
-            print(diff)
             for i in range(diff):
                 td = timedelta(days=i + 1)
                 dct[s_date + td] = [full_day[:]]
