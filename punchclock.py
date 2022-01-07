@@ -161,11 +161,44 @@ def plot_dates(
     plt.xlabel('Date')
     plt.ylabel('Time')
     plt.title(f'{name.title()} Punchclock {start_date_str} - {end_date_str}')
-    index = 0
     x = 0
     width = 20
     dct = get_date_dict(name)
     size = (end - start).days + 1
+    plt.xlim(0, size * width)
+    xticks_pos = []
+    xticks_labels = []
+    for current_date in [start + timedelta(i) for i in range(size)]:
+        center = x + width / 2
+        times = dct.get(current_date)
+        if times is None:
+            continue
+        for start_time, end_time in times:
+            s_val = start_time.hour + start_time.minute / 60
+            e_val = end_time.hour + end_time.minute / 60
+            plt.fill_betweenx(
+                [s_val, e_val],
+                [x, x],
+                [x + width, x + width]
+            )
+            plt.text(
+                center,
+                (e_val + s_val) / 2,
+                start_time.strftime(time_format) + ' - ' + end_time.strftime(time_format),
+                ha='center',
+                va='center',
+                fontsize=7.5
+            )
+        xticks_pos.append(center)
+        xticks_labels.append(current_date.strftime(date_format))
+        x += width
+    plt.subplots_adjust(
+        left = 0.05,
+        bottom = 0.1,
+        right = 0.95,
+        top = 0.95,
+    )
+    plt.xticks(xticks_pos, xticks_labels, rotation = 25)
     plt.show()
 
 def plot_punchclock(
