@@ -6,6 +6,11 @@ from sys import stderr
 from datetime import date
 
 def parse_date(date_string: str) -> date:
+    '''
+    :date_string: the string to pase a date from
+    :returns: date string
+    raises ValueError if not possible
+    '''
     return date.fromisoformat(
         date_string
             .strip()
