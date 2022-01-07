@@ -128,12 +128,39 @@ def get_running() -> list[str]:
     '''
     return list(filter(lambda name: len(get_punchclock(name)[-1]) == 1, get_all_punchclocks()))
 
+def plot_dates(
+        name: str,
+        start: date,
+        end: date,
+        time_format: str = '%I:%M %p',
+        date_format: str = '%a %Y/%m/%d'
+    ):
+    '''
+    Plot a punchclock between the given dates
+    '''
+    exists_or_exit(name)
+    if start > end:
+        plot_dates(
+            name,
+            start,
+            end,
+            time_format,
+            date_format
+        )
+    start_date_str = start.strftime(date_format)
+    end_date_str = end.strftime(date_format)
+    exists_or_exit(name)
+    plt.ylim(0, 24) # set limits on y axis
+    plt.gca().invert_yaxis() # flippy floppy
+    plt.xlabel('Date')
+    plt.ylabel('Time')
+    plt.title(f'{name.title()} Punchclock {start_date_str} - {end_date_str}')
+
 def plot_punchclock(
         name: str,
         max_days: int = 7,
         time_format: str = '%I:%M %p',
         date_format: str = '%a %Y/%m/%d'
-
     ):
     '''
     plot a punchclock
@@ -252,6 +279,8 @@ def print_help():
   d {name}, delete {name}                 - delete a clock with the name {name}
   p {name}, plot {name}                   - plot a clock with the name {name}
   t {name} {date}, total {name} {date}    - calculated total time clocked in {name} since {date}
+  pd {name} {start} {end}, plot-dates {name} {start} {end}
+                                          - plot dates in {name} between {start} and {end}
   s, show, l, list                        - show all existing clocks
   r, running                              - show all clocks currently clocked into''')
 
@@ -273,12 +302,19 @@ def main():
             delete_punchclock(name)
         case ['plot', name] | ['p', name]:
             plot_punchclock(name)
+        case ['plot-dates', name, start, end] | ['pd', name, start, end]:
+            try:
+                start_date = parse_date(start)
+                end_date = parse_date(end)
+                plot_dates(name, start_end, d)
+            except ValueError as e:
+                eprint(e)
         case ['total', name, since] | ['t', name, since]:
             try:
                 date_obj = parse_date(since)
                 print(f'Total time elapsed in {name} since {since}: {calculate_total(name, date_obj)}')
             except ValueError as e:
-                print(e)
+                eprint(e)
         case ['show'] | ['s'] | ['list'] | ['l']:
             print(get_all_punchclocks())
         case ['running'] | ['r']:
