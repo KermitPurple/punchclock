@@ -133,10 +133,17 @@ def plot_dates(
         start: date,
         end: date,
         time_format: str = '%I:%M %p',
-        date_format: str = '%a %Y/%m/%d'
+        date_format: str = '%a %Y/%m/%d',
+        skip_empty: bool = False
     ):
     '''
     Plot a punchclock between the given dates
+    :name: name of punchclock
+    :start: start date of punchclock
+    :end: end date of punchclock
+    :time_format: a time format string for time.strftime
+    :date_format: a date format string for datetime.strftime
+    :skip_empty: whether or not days where nothing is recorded should be displayed
     '''
     exists_or_exit(name)
     if start > end:
@@ -149,12 +156,17 @@ def plot_dates(
         )
     start_date_str = start.strftime(date_format)
     end_date_str = end.strftime(date_format)
-    exists_or_exit(name)
     plt.ylim(0, 24) # set limits on y axis
     plt.gca().invert_yaxis() # flippy floppy
     plt.xlabel('Date')
     plt.ylabel('Time')
     plt.title(f'{name.title()} Punchclock {start_date_str} - {end_date_str}')
+    index = 0
+    x = 0
+    width = 20
+    dct = get_date_dict(name)
+    size = (end - start).days + 1
+    plt.show()
 
 def plot_punchclock(
         name: str,
@@ -163,7 +175,7 @@ def plot_punchclock(
         date_format: str = '%a %Y/%m/%d'
     ):
     '''
-    plot a punchclock
+    plot a punchclock the most recent {max_days} days
     :name: name of the clock to plot
     :max_days: the maximum number of days to display
     :time_format: a time format string for time.strftime
@@ -306,7 +318,7 @@ def main():
             try:
                 start_date = parse_date(start)
                 end_date = parse_date(end)
-                plot_dates(name, start_end, d)
+                plot_dates(name, start_date, end_date)
             except ValueError as e:
                 eprint(e)
         case ['total', name, since] | ['t', name, since]:
