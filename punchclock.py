@@ -193,17 +193,12 @@ def plot_punchclock(
     dct = get_date_dict(name)
     size = min(len(dct), max_days)
     plt.xlim(0, size * width)
-    plt.xticks(
-        list(map(
-            lambda x: x * width + width / 2,
-            range(size)
-        ))[::-1],
-        reversed(list(map(
-            lambda x: x.strftime(date_format),
-            sorted(dct.keys())
-        ))[-size:])
-    )
+    xticks_pos = []
+    xticks_labels = []
     for current_date, times in sorted(dct.items(), key=lambda x: x[0]):
+        center = x + width / 2
+        xticks_pos.append(center)
+        xticks_labels.append(current_date.strftime(date_format))
         for start, end in times:
             s_val = start.hour + start.minute / 60
             e_val = end.hour + end.minute / 60
@@ -213,7 +208,7 @@ def plot_punchclock(
                 [x + width, x + width]
             )
             plt.text(
-                x + width / 2,
+                center,
                 (e_val + s_val) / 2,
                 start.strftime(time_format) + ' - ' + end.strftime(time_format),
                 ha='center',
@@ -224,6 +219,7 @@ def plot_punchclock(
         index += 1
         if index >= max_days:
             break
+    plt.xticks(xticks_pos, xticks_labels)
     plt.show()
 
 def get_date_dict(name: str):
