@@ -17,7 +17,11 @@ def parse_date(date_string: str) -> date:
 def get_date(prompt: str = '', print_format: bool = True, print_newline: bool = True) -> date:
     '''
     gets and validates user input for a date in isoformat
-    : :
+    :prompt: the prompt to print;
+        if promt is an empty string nothing is printed
+    :print_format: boolean determining if the date format should print
+    :print_newline: boolean determining if a newline should print
+    :returns: a date from the parsed string
     '''
     if prompt or print_format:
         print(prompt + ('(YYYY-MM-DD)' if print_format else ''), end = '\n' if print_newline else '')
