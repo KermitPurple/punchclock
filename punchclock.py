@@ -367,8 +367,8 @@ def main():
             args = parser.parse_args()
             plot_dates(args.name, args.start, args.end, args.skip_empty)
         case 'total'  | 't':
-            parser = argparse.ArgumentParser('clock plot-dates', description='plot a punchclock between two dates')
-            parser.add_argument('name', type=str, help='name of clock to plot')
+            parser = argparse.ArgumentParser('clock total', description='calculate total time worked since a given date')
+            parser.add_argument('name', type=str, help='name of clock to calculate from')
             parser.add_argument('date', type=date_arg, help='date to find the total worked since')
             args = parser.parse_args()
             print(f'Total time elapsed in {args.name} since {args.date}: {calculate_total(args.name, args.date)}')
