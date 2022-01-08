@@ -141,8 +141,8 @@ def plot_dates(
         name: str,
         start: date,
         end: date,
-        time_format: str = TIME_FORMAT
-        date_format: str = DATE_FORMAT
+        time_format: str = TIME_FORMAT,
+        date_format: str = DATE_FORMAT,
         skip_empty: bool = False
     ):
     '''
@@ -214,8 +214,8 @@ def plot_dates(
 def plot_punchclock(
         name: str,
         max_days: int = 7,
-        time_format: str = TIME_FORMAT
-        date_format: str = DATE_FORMAT
+        time_format: str = TIME_FORMAT,
+        date_format: str = DATE_FORMAT,
     ):
     '''
     plot a punchclock the most recent {max_days} days
