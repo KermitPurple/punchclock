@@ -164,40 +164,41 @@ def plot_dates(
     x = 0
     width = 20
     dct = get_date_dict(name)
-    size = (end - start).days + 1
-    plt.xlim(0, size * width)
     xticks_pos = []
     xticks_labels = []
+    size = (end - start).days + 1
     for current_date in [start + timedelta(i) for i in range(size)]:
         center = x + width / 2
         times = dct.get(current_date)
-        if times is None:
+        if times:
+            for start_time, end_time in times:
+                s_val = start_time.hour + start_time.minute / 60
+                e_val = end_time.hour + end_time.minute / 60
+                plt.fill_betweenx(
+                    [s_val, e_val],
+                    [x, x],
+                    [x + width, x + width]
+                )
+                plt.text(
+                    center,
+                    (e_val + s_val) / 2,
+                    start_time.strftime(time_format) + ' - ' + end_time.strftime(time_format),
+                    ha='center',
+                    va='center',
+                    fontsize=7.5
+                )
+        elif skip_empty:
             continue
-        for start_time, end_time in times:
-            s_val = start_time.hour + start_time.minute / 60
-            e_val = end_time.hour + end_time.minute / 60
-            plt.fill_betweenx(
-                [s_val, e_val],
-                [x, x],
-                [x + width, x + width]
-            )
-            plt.text(
-                center,
-                (e_val + s_val) / 2,
-                start_time.strftime(time_format) + ' - ' + end_time.strftime(time_format),
-                ha='center',
-                va='center',
-                fontsize=7.5
-            )
         xticks_pos.append(center)
         xticks_labels.append(current_date.strftime(date_format))
         x += width
     plt.subplots_adjust(
         left = 0.05,
-        bottom = 0.1,
+        bottom = 0.15,
         right = 0.95,
         top = 0.95,
     )
+    plt.xlim(0, len(xticks_pos) * width)
     plt.xticks(xticks_pos, xticks_labels, rotation = 25)
     plt.show()
 
@@ -215,45 +216,17 @@ def plot_punchclock(
     :date_format: a date format string for datetime.strftime
     '''
     exists_or_exit(name)
-    plt.ylim(0, 24) # set limits on y axis
-    plt.gca().invert_yaxis() # flippy floppy
-    plt.xlabel('Date')
-    plt.ylabel('Time')
-    plt.title(f'{name.title()} Punchclock')
-    index = 0
-    x = 0
-    width = 20
-    dct = get_date_dict(name)
-    size = min(len(dct), max_days)
-    plt.xlim(0, size * width)
-    xticks_pos = []
-    xticks_labels = []
-    for current_date, times in sorted(dct.items(), key=lambda x: x[0]):
-        center = x + width / 2
-        xticks_pos.append(center)
-        xticks_labels.append(current_date.strftime(date_format))
-        for start, end in times:
-            s_val = start.hour + start.minute / 60
-            e_val = end.hour + end.minute / 60
-            plt.fill_betweenx(
-                [s_val, e_val],
-                [x, x],
-                [x + width, x + width]
-            )
-            plt.text(
-                center,
-                (e_val + s_val) / 2,
-                start.strftime(time_format) + ' - ' + end.strftime(time_format),
-                ha='center',
-                va='center',
-                fontsize=7.5
-            )
-        x += width
-        index += 1
-        if index >= max_days:
-            break
-    plt.xticks(xticks_pos, xticks_labels)
-    plt.show()
+    dates = sorted(map(lambda x: x[0], get_date_dict(name).items()))
+    start = dates[-max_days] if len(dates) > max_days else dates[0]
+    end = dates[-1]
+    plot_dates(
+        name,
+        start,
+        end,
+        time_format,
+        date_format,
+        True
+    )
 
 def get_date_dict(name: str):
     '''
