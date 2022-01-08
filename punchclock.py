@@ -329,7 +329,7 @@ def main():
         print_help()
         return
     match sys.argv[0]:
-        case 'help' | 'h':
+        case 'h' | 'help' | '-h' | '--help':
             print_help()
         case 'in' | 'i':
             parser = argparse.ArgumentParser('clock in', description='clock into a punchclcok')
