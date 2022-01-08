@@ -14,10 +14,30 @@ TIME_FORMAT = '%I:%M %p'
 DATE_FORMAT = '%a %Y/%m/%d'
 
 def date_arg(s: str) -> date:
+    '''
+    User defined date type for arg parse
+    :s: input string
+    :returns: a parsed date
+    '''
     try:
         return parse_date(s)
     except:
         raise argparse.ArgumentTypeError(f'could not parse {s!r}, expected date in isoformat. e.g. 2022/01/07 is January 7th 2021')
+
+def pos_int(s: str) -> int:
+    '''
+    User defined int type for arg parse
+    :s: input string
+    :returns: a parsed number greater than one
+    '''
+    try:
+        val = int(s)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f'Expected int found {s!r}')
+    if val <= 0:
+        raise argparse.ArgumentTypeError(f'Number must be greater than 0')
+    return val
+
 
 def exists_or_exit(name: str):
     '''
@@ -340,9 +360,9 @@ def main():
         case 'plot' | 'p':
             parser = argparse.ArgumentParser('clock plot', description='plot a punchclock')
             parser.add_argument('name', type=str, help='name of clock to plot')
-            # max days
+            parser.add_argument('-d', '--days', type=pos_int, default=7)
             args = parser.parse_args()
-            plot_punchclock(args.name)
+            plot_punchclock(args.name, args.days)
         case 'plot-dates' | 'pd':
             parser = argparse.ArgumentParser('clock plot-dates', description='plot a punchclock between two dates')
             parser.add_argument('name', type=str, help='name of clock to plot')
