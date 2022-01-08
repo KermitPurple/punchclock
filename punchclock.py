@@ -161,8 +161,6 @@ def plot_dates(
         name: str,
         start: date,
         end: date,
-        time_format: str = TIME_FORMAT,
-        date_format: str = DATE_FORMAT,
         skip_empty: bool = False
     ):
     '''
@@ -170,8 +168,6 @@ def plot_dates(
     :name: name of punchclock
     :start: start date of punchclock
     :end: end date of punchclock
-    :time_format: a time format string for time.strftime
-    :date_format: a date format string for datetime.strftime
     :skip_empty: whether or not days where nothing is recorded should be displayed
     '''
     exists_or_exit(name)
@@ -180,11 +176,9 @@ def plot_dates(
             name,
             start,
             end,
-            time_format,
-            date_format
         )
-    start_date_str = start.strftime(date_format)
-    end_date_str = end.strftime(date_format)
+    start_date_str = start.strftime(DATE_FORMAT)
+    end_date_str = end.strftime(DATE_FORMAT)
     plt.ylim(0, 24) # set limits on y axis
     plt.gca().invert_yaxis() # flippy floppy
     plt.xlabel('Date')
@@ -211,7 +205,7 @@ def plot_dates(
                 plt.text(
                     center,
                     (e_val + s_val) / 2,
-                    start_time.strftime(time_format) + ' - ' + end_time.strftime(time_format),
+                    start_time.strftime(TIME_FORMAT) + ' - ' + end_time.strftime(TIME_FORMAT),
                     ha='center',
                     va='center',
                     fontsize=7.5
@@ -219,7 +213,7 @@ def plot_dates(
         elif skip_empty:
             continue
         xticks_pos.append(center)
-        xticks_labels.append(current_date.strftime(date_format))
+        xticks_labels.append(current_date.strftime(DATE_FORMAT))
         x += width
     plt.subplots_adjust(
         left = 0.05,
@@ -234,15 +228,11 @@ def plot_dates(
 def plot_punchclock(
         name: str,
         max_days: int = 7,
-        time_format: str = TIME_FORMAT,
-        date_format: str = DATE_FORMAT,
     ):
     '''
     plot a punchclock the most recent {max_days} days
     :name: name of the clock to plot
     :max_days: the maximum number of days to display
-    :time_format: a time format string for time.strftime
-    :date_format: a date format string for datetime.strftime
     '''
     exists_or_exit(name)
     dates = sorted(map(lambda x: x[0], get_date_dict(name).items()))
@@ -252,8 +242,6 @@ def plot_punchclock(
         name,
         start,
         end,
-        time_format,
-        date_format,
         True
     )
 
@@ -360,7 +348,7 @@ def main():
         case 'plot' | 'p':
             parser = argparse.ArgumentParser('clock plot', description='plot a punchclock')
             parser.add_argument('name', type=str, help='name of clock to plot')
-            parser.add_argument('-d', '--days', type=pos_int, default=7)
+            parser.add_argument('-d', '--days', type=pos_int, default=7, help='Number of days to display')
             args = parser.parse_args()
             plot_punchclock(args.name, args.days)
         case 'plot-dates' | 'pd':
