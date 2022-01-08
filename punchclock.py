@@ -228,21 +228,27 @@ def plot_dates(
 def plot_punchclock(
         name: str,
         max_days: int = 7,
+        skip_empty: bool = True,
     ):
     '''
     plot a punchclock the most recent {max_days} days
     :name: name of the clock to plot
     :max_days: the maximum number of days to display
+    :skip_empty: whether or not days where nothing is recorded should be displayed
     '''
     exists_or_exit(name)
-    dates = sorted(map(lambda x: x[0], get_date_dict(name).items()))
-    start = dates[-max_days] if len(dates) > max_days else dates[0]
-    end = dates[-1]
+    if skip_empty:
+        dates = sorted(map(lambda x: x[0], get_date_dict(name).items()))
+        start = dates[-max_days] if len(dates) > max_days else dates[0]
+        end = dates[-1]
+    else:
+        end = date.today()
+        start = end - timedelta(max_days)
     plot_dates(
         name,
         start,
         end,
-        True
+        skip_empty
     )
 
 def get_date_dict(name: str):
@@ -349,8 +355,9 @@ def main():
             parser = argparse.ArgumentParser('clock plot', description='plot a punchclock')
             parser.add_argument('name', type=str, help='name of clock to plot')
             parser.add_argument('-d', '--days', type=pos_int, default=7, help='number of days to display')
+            parser.add_argument('-s', '--skip-empty', action='store_true', help='skip days that do not have any time recorded on them')
             args = parser.parse_args()
-            plot_punchclock(args.name, args.days)
+            plot_punchclock(args.name, args.days, args.skip_empty)
         case 'plot-dates' | 'pd':
             parser = argparse.ArgumentParser('clock plot-dates', description='plot a punchclock between two dates')
             parser.add_argument('name', type=str, help='name of clock to plot')
