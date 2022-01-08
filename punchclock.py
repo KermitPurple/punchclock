@@ -2,6 +2,7 @@
 from command_line_tools import *
 import matplotlib.pyplot as plt
 from datetime import datetime, date, time, timedelta
+import argparse
 import pickle
 import sys
 import os
@@ -9,6 +10,14 @@ import os
 PUNCHCLOCK_PATH = '/Users/shane/dropbox/punchclocks'
 PUNCHCLOCK_PREFIX = 'pc_'
 PUNCHCLOCK_PREFIX_LENGTH = len(PUNCHCLOCK_PREFIX)
+TIME_FORMAT = '%I:%M %p'
+DATE_FORMAT = '%a %Y/%m/%d'
+
+def date_arg(s: str) -> date:
+    try:
+        return parse_date(s)
+    except:
+        raise argparse.ArgumentTypeError(f'could not parse {s!r}, expected date in isoformat. e.g. 2022/01/07 is January 7th 2021')
 
 def exists_or_exit(name: str):
     '''
@@ -132,8 +141,8 @@ def plot_dates(
         name: str,
         start: date,
         end: date,
-        time_format: str = '%I:%M %p',
-        date_format: str = '%a %Y/%m/%d',
+        time_format: str = TIME_FORMAT
+        date_format: str = DATE_FORMAT
         skip_empty: bool = False
     ):
     '''
@@ -205,8 +214,8 @@ def plot_dates(
 def plot_punchclock(
         name: str,
         max_days: int = 7,
-        time_format: str = '%I:%M %p',
-        date_format: str = '%a %Y/%m/%d'
+        time_format: str = TIME_FORMAT
+        date_format: str = DATE_FORMAT
     ):
     '''
     plot a punchclock the most recent {max_days} days
@@ -295,43 +304,61 @@ def print_help():
   t {name} {date}, total {name} {date}    - calculated total time clocked in {name} since {date}
   pd {name} {start} {end}, plot-dates {name} {start} {end}
                                           - plot dates in {name} between {start} and {end}
-  s, show, l, list                        - show all existing clocks
+  l, list                                 - show all existing clocks
   r, running                              - show all clocks currently clocked into''')
 
 def main():
     '''Driver Code'''
     os.chdir(PUNCHCLOCK_PATH)
-    sys.argv.pop(0)
-    arg_len = len(sys.argv)
-    match sys.argv:
-        case [] | ['help'] | ['h']:
+    sys.argv.pop(0) # remove first arg
+    if len(sys.argv) == 0:
+        print_help()
+        return
+    match sys.argv[0]:
+        case 'help' | 'h':
             print_help()
-        case ['in', name] | ['i', name]:
-            clock_in(name)
-        case ['out', name] | ['o', name]:
-            clock_out(name)
-        case ['show', name] | ['s', name]:
-            show_current(name)
-        case ['delete', name] | ['d', name]:
-            delete_punchclock(name)
-        case ['plot', name] | ['p', name]:
-            plot_punchclock(name)
-        case ['plot-dates', name, start, end] | ['pd', name, start, end]:
-            try:
-                start_date = parse_date(start)
-                end_date = parse_date(end)
-                plot_dates(name, start_date, end_date)
-            except ValueError as e:
-                eprint(e)
-        case ['total', name, since] | ['t', name, since]:
-            try:
-                date_obj = parse_date(since)
-                print(f'Total time elapsed in {name} since {since}: {calculate_total(name, date_obj)}')
-            except ValueError as e:
-                eprint(e)
-        case ['show'] | ['s'] | ['list'] | ['l']:
+        case 'in' | 'i':
+            parser = argparse.ArgumentParser('clock in', description='clock into a punchclcok')
+            parser.add_argument('name', type=str, help='name of the clock to punch into')
+            args = parser.parse_args()
+            clock_in(args.name)
+        case 'out' | 'o':
+            parser = argparse.ArgumentParser('clock out', description='clock out of a punchclcok')
+            parser.add_argument('name', type=str, help='name of the clock to punch out of')
+            args = parser.parse_args()
+            clock_out(args.name)
+        case 'show' | 's':
+            parser = argparse.ArgumentParser('clock show', description='show the most recent usage of a punchclock')
+            parser.add_argument('name', type=str, help='name of the clock to show')
+            args = parser.parse_args()
+            show_current(args.name)
+        case 'delete' | 'd':
+            parser = argparse.ArgumentParser('clock delete', description='delete a punchclock')
+            parser.add_argument('name', type=str, help='name of the clock to delete')
+            args = parser.parse_args()
+            delete_punchclock(args.name)
+        case 'plot' | 'p':
+            parser = argparse.ArgumentParser('clock plot', description='plot a punchclock')
+            parser.add_argument('name', type=str, help='name of clock to plot')
+            # max days
+            args = parser.parse_args()
+            plot_punchclock(args.name)
+        case 'plot-dates' | 'pd':
+            parser = argparse.ArgumentParser('clock plot-dates', description='plot a punchclock between two dates')
+            parser.add_argument('name', type=str, help='name of clock to plot')
+            parser.add_argument('start', type=date_arg, help='start of the date range')
+            parser.add_argument('end', type=date_arg, help='end of the date range')
+            args = parser.parse_args()
+            plot_dates(args.name, args.start, args.end)
+        case 'total'  | 't':
+            parser = argparse.ArgumentParser('clock plot-dates', description='plot a punchclock between two dates')
+            parser.add_argument('name', type=str, help='name of clock to plot')
+            parser.add_argument('date', type=date_arg, help='date to find the total worked since')
+            args = parser.parse_args()
+            print(f'Total time elapsed in {args.name} since {args.date}: {calculate_total(args.name, args.date)}')
+        case 'list' | 'l':
             print(get_all_punchclocks())
-        case ['running'] | ['r']:
+        case 'running' | 'r':
             print(get_running())
         case _:
             eprint('ERROR: Invalid args, enter "clock" to show help')
