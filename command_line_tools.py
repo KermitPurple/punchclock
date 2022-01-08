@@ -4,6 +4,7 @@ Tools to make the commandline look nice easier
 
 from sys import stderr
 from datetime import date
+from getch import getch
 
 def parse_date(date_string: str) -> date:
     '''
@@ -44,11 +45,11 @@ def get_yes_no(prompt: str) -> bool:
     if prompt != '':
         print(prompt)
     while 1:
-        response = input().lower().strip()
-        if response == 'yes' or response == 'y':
-            return True
-        elif response == 'no' or response == 'n':
-            return False
+        match getch().lower():
+            case 'y':
+                return True
+            case 'n':
+                return False
 
 def eprint(*args, **kwargs):
     '''
