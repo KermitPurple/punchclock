@@ -348,7 +348,7 @@ def main():
         case 'plot' | 'p':
             parser = argparse.ArgumentParser('clock plot', description='plot a punchclock')
             parser.add_argument('name', type=str, help='name of clock to plot')
-            parser.add_argument('-d', '--days', type=pos_int, default=7, help='Number of days to display')
+            parser.add_argument('-d', '--days', type=pos_int, default=7, help='number of days to display')
             args = parser.parse_args()
             plot_punchclock(args.name, args.days)
         case 'plot-dates' | 'pd':
