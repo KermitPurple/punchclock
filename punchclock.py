@@ -356,8 +356,9 @@ def main():
             parser.add_argument('name', type=str, help='name of clock to plot')
             parser.add_argument('start', type=date_arg, help='start of the date range')
             parser.add_argument('end', type=date_arg, help='end of the date range')
+            parser.add_argument('-s', '--skip-empty', action='store_true', help='skip days that do not have any time recorded on them')
             args = parser.parse_args()
-            plot_dates(args.name, args.start, args.end)
+            plot_dates(args.name, args.start, args.end, args.skip_empty)
         case 'total'  | 't':
             parser = argparse.ArgumentParser('clock plot-dates', description='plot a punchclock between two dates')
             parser.add_argument('name', type=str, help='name of clock to plot')
