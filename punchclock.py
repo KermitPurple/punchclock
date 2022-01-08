@@ -377,7 +377,7 @@ def main():
         case 'running' | 'r':
             print(get_running())
         case _:
-            eprint('ERROR: Invalid args, enter "clock" to show help')
+            eprint('clock: Invalid args, enter "clock" to show help')
             exit(1)
 
 if __name__ == '__main__':
