@@ -183,6 +183,7 @@ def plot_dates(
     plt.gca().invert_yaxis() # flippy floppy
     plt.xlabel('Date')
     plt.ylabel('Time')
+    plt.yticks(range(1, 25))
     plt.title(f'{name.title()} Punchclock {start_date_str} - {end_date_str}')
     x = 0
     width = 20
