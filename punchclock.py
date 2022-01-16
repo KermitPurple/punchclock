@@ -290,17 +290,24 @@ def get_date_dict(name: str):
                 dct[e_date].append(val)
     return dct
 
-def calculate_total(name: str, since: date) -> timedelta:
+def calculate_total(name: str, start: date, end: date) -> timedelta:
     '''
+    finds the total ammount of time recorded in between the two dates
     :name: name of the punch clock
-    :since: the earliest date to count
+    :start: the earliest date to count
+    :end: the latest date to count
     :returns: total ammount of time put into a punchclock
     '''
+    exists_or_exit(name)
+    if end > start:
+        calculate_total(name, end, start)
     total = timedelta()
     dct = get_date_dict(name)
     for key, times in reversed(dct.items()):
-        if key < since:
-            return total
+        if key > end:
+            continue
+        elif key < start:
+            break
         for val in times:
             if len(val) == 1:
                 start, end = val[0], datetime.now()
@@ -368,11 +375,13 @@ def main():
             args = parser.parse_args()
             plot_dates(args.name, args.start, args.end, args.skip_empty)
         case 'total'  | 't':
-            parser = argparse.ArgumentParser('clock total', description='calculate total time worked since a given date')
+            parser = argparse.ArgumentParser('clock total', description='calulate total time worked in between two dates')
             parser.add_argument('name', type=str, help='name of clock to calculate from')
-            parser.add_argument('date', type=date_arg, help='date to find the total worked since')
+            parser.add_argument('start', type=date_arg, help='start date to find the total worked since')
+            parser.add_argument('end', type=date_arg, help='end date to find the total worked since', nargs='?', default=date.today())
             args = parser.parse_args()
-            print(f'Total time elapsed in {args.name} since {args.date}: {calculate_total(args.name, args.date)}')
+            print(vars(args))
+            print(f'Total time elapsed in {args.name} between {args.start}-{args.end}: {calculate_total(args.name, args.start, args.end)}')
         case 'list' | 'l':
             print(get_all_punchclocks())
         case 'running' | 'r':
