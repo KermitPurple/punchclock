@@ -304,16 +304,14 @@ def calculate_total(name: str, start: date, end: date) -> timedelta:
     total = timedelta()
     dct = get_date_dict(name)
     for key, times in reversed(dct.items()):
-        if key > end:
+        if key > end or key < start:
             continue
-        elif key < start:
-            break
         for val in times:
             if len(val) == 1:
-                start, end = val[0], datetime.now()
+                start_time, end_time = val[0], datetime.now()
             elif len(val) == 2:
-                start, end = val
-            total += datetime.combine(key, end) - datetime.combine(key, start)
+                start_time, end_time = val
+            total += datetime.combine(key, end_time) - datetime.combine(key, start_time)
     return total
 
 def print_help():
@@ -380,7 +378,6 @@ def main():
             parser.add_argument('start', type=date_arg, help='start date to find the total worked since')
             parser.add_argument('end', type=date_arg, help='end date to find the total worked since', nargs='?', default=date.today())
             args = parser.parse_args()
-            print(vars(args))
             print(f'Total time elapsed in {args.name} between {args.start}-{args.end}: {calculate_total(args.name, args.start, args.end)}')
         case 'list' | 'l':
             print(get_all_punchclocks())
